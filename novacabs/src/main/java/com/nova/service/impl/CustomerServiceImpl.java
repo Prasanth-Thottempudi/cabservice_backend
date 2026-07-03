@@ -1,29 +1,85 @@
 package com.nova.service.impl;
 
-
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.nova.dto.CustomerRequest;
 import com.nova.dto.CustomerResponse;
 import com.nova.entity.Customer;
-import com.nova.exception.CustomerAlreadyExistsException;
 import com.nova.exception.CustomerNotFoundException;
 import com.nova.repository.CustomerRepository;
 import com.nova.service.CustomerService;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@Transactional
 public class CustomerServiceImpl implements CustomerService {
 
-    
+    private final CustomerRepository customerRepository;
+
+    public CustomerServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    @Override
+    public CustomerResponse createCustomer(CustomerRequest request) {
+
+        Customer customer = new Customer();
+
+        customer.setFirstName(request.getFirstName());
+        customer.setLastName(request.getLastName());
+        customer.setMobileNumber(request.getMobileNumber());
+        customer.setEmail(request.getEmail());
+        customer.setGender(request.getGender());
+        customer.setDateOfBirth(request.getDateOfBirth());
+
+        // Default values
+        customer.setWalletBalance(0.0);
+        customer.setRating(5.0);
+        customer.setTotalRides(0);
+        customer.setVerified(false);
+        customer.setActive(true);
+
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setUpdatedAt(LocalDateTime.now());
+
+        Customer savedCustomer = customerRepository.save(customer);
+
+        return convertToResponse(savedCustomer);
+    }
+
+    @Override
+    public CustomerResponse getCustomerById(UUID customerId) {
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        "Customer not found with id: " + customerId));
+
+        return convertToResponse(customer);
+    }
+
+    private CustomerResponse convertToResponse(Customer customer) {
+
+        CustomerResponse response = new CustomerResponse();
+
+        response.setCustomerId(customer.getCustomerId());
+        response.setFirstName(customer.getFirstName());
+        response.setLastName(customer.getLastName());
+        response.setMobileNumber(customer.getMobileNumber());
+        response.setEmail(customer.getEmail());
+        response.setGender(customer.getGender());
+        response.setDateOfBirth(customer.getDateOfBirth());
+        response.setProfilePhotoUrl(customer.getProfilePhotoUrl());
+        response.setWalletBalance(customer.getWalletBalance());
+        response.setRating(customer.getRating());
+        response.setTotalRides(customer.getTotalRides());
+        response.setVerified(customer.getVerified());
+        response.setActive(customer.getActive());
+        response.setReferralCode(customer.getReferralCode());
+        response.setReferredBy(customer.getReferredBy());
+        response.setCreatedAt(customer.getCreatedAt());
+        response.setUpdatedAt(customer.getUpdatedAt());
+
+        return response;
+    }
 }
