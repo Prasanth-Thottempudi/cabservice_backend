@@ -12,16 +12,21 @@ import com.nova.dto.BookingResponse;
 import com.nova.service.BookingService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/bookings")
 @Validated
 public class BookingController {
 
-    private  BookingService bookingService;
+    private final BookingService bookingService;
+    
+    
 
-    @PostMapping
+    public BookingController(BookingService bookingService) {
+		this.bookingService = bookingService;
+	}
+
+	@PostMapping
     public ResponseEntity<BookingResponse> createBooking(
             @Valid @RequestBody BookingRequest request) {
 

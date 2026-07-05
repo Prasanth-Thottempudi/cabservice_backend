@@ -8,15 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.nova.entity.Booking;
 
-public interface BookingRepository extends JpaRepository<Booking, UUID> {
+public interface BookingRepository extends JpaRepository<Booking, String> {
 
-    Optional<Booking> findByBookingNumber(String bookingNumber);
+    Optional<Booking> findByBookingId(String bookingId);
 
-    boolean existsByBookingNumber(String bookingNumber);
+    boolean existsByBookingId(String bookingId);
     
 
 
     @Query(value = "SELECT nextval('booking_sequence')", nativeQuery = true)
     Long getNextBookingSequence();
+    
+    
 
 }

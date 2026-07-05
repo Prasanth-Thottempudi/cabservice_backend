@@ -34,8 +34,11 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingMapper.toEntity(request);
 
-        generateBookingDetails(booking);
+        Long sequence = bookingRepository.getNextBookingSequence();
 
+        String bookingId = String.format("NOVA%04d", sequence);
+
+        booking.setBookingId(bookingId);
         Booking savedBooking = bookingRepository.save(booking);
 
         BookingResponse response = bookingMapper.toResponse(savedBooking);
@@ -48,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse getBookingById(String bookingId) {
 
-        Booking booking = bookingRepository.findById(UUID.fromString(bookingId))
+        Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
         return bookingMapper.toResponse(booking);
@@ -57,18 +60,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse getBookingByNumber(String bookingNumber) {
 
-        Booking booking = bookingRepository.findByBookingNumber(bookingNumber)
+        Booking booking = bookingRepository.findByBookingId(bookingNumber)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
         return bookingMapper.toResponse(booking);
     }
 
     
-	private void generateBookingDetails(Booking booking) {
-
-	    Long sequence = bookingRepository.getNextBookingSequence();
-
-	    booking.setBookingSequence(sequence);
-	    booking.setBookingNumber(String.format("NC%06d", sequence));
-	}
 }

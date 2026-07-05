@@ -12,7 +12,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -27,11 +26,8 @@ import lombok.Setter;
 public class Booking {
 
     @Id
-    @GeneratedValue
-    private UUID id;
-
-    @Column(nullable = false, unique = true)
-    private String bookingNumber;
+    @Column(name = "booking_id", nullable = false, unique = true, length = 20)
+    private String bookingId;
 
     @Column(nullable = false)
     private String customerName;
@@ -61,7 +57,7 @@ public class Booking {
     private Double dropLongitude;
 
     @Column(nullable = false)
-    private UUID vehicleId;
+    private String vehicleId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -86,10 +82,11 @@ public class Booking {
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
-    @Column(nullable = false)
+    @Column(nullable =false)
     private LocalDateTime updatedDate;
-    
-    @Column(name = "booking_sequence", nullable = false, unique = true)
+
+    // Internal sequence value (optional)
+    @Column(name = "booking_sequence", unique = true)
     private Long bookingSequence;
 
     @PrePersist
@@ -107,31 +104,13 @@ public class Booking {
     public void preUpdate() {
         updatedDate = LocalDateTime.now();
     }
-    
-    
 
-	public Long getBookingSequence() {
-		return bookingSequence;
+	public String getBookingId() {
+		return bookingId;
 	}
 
-	public void setBookingSequence(Long bookingSequence) {
-		this.bookingSequence = bookingSequence;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getBookingNumber() {
-		return bookingNumber;
-	}
-
-	public void setBookingNumber(String bookingNumber) {
-		this.bookingNumber = bookingNumber;
+	public void setBookingId(String bookingId) {
+		this.bookingId = bookingId;
 	}
 
 	public String getCustomerName() {
@@ -206,11 +185,13 @@ public class Booking {
 		this.dropLongitude = dropLongitude;
 	}
 
-	public UUID getVehicleId() {
+	
+
+	public String getVehicleId() {
 		return vehicleId;
 	}
 
-	public void setVehicleId(UUID vehicleId) {
+	public void setVehicleId(String vehicleId) {
 		this.vehicleId = vehicleId;
 	}
 
@@ -278,4 +259,11 @@ public class Booking {
 		this.updatedDate = updatedDate;
 	}
 
+	public Long getBookingSequence() {
+		return bookingSequence;
+	}
+
+	public void setBookingSequence(Long bookingSequence) {
+		this.bookingSequence = bookingSequence;
+	}
 }

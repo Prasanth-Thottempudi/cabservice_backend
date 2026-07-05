@@ -49,7 +49,7 @@ public class BookingRequest {
     private Double dropLongitude;
 
     @NotNull(message = "Vehicle is required")
-    private UUID vehicleId;
+    private String vehicleId;
 
     @NotNull(message = "Trip type is required")
     private TripType tripType;
@@ -140,11 +140,11 @@ public class BookingRequest {
 		this.dropLongitude = dropLongitude;
 	}
 
-	public UUID getVehicleId() {
+	public String getVehicleId() {
 		return vehicleId;
 	}
 
-	public void setVehicleId(UUID vehicleId) {
+	public void setVehicleId(String vehicleId) {
 		this.vehicleId = vehicleId;
 	}
 

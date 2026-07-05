@@ -119,5 +119,37 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @ExceptionHandler(VehicleNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleVehicleNotFoundException(
+            VehicleNotFoundException ex,
+            HttpServletRequest request) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Not Found");
+        response.put("message", ex.getMessage());
+        response.put("path", request.getRequestURI());
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+    
+    @ExceptionHandler(VehicleAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleVehicleAlreadyExistsException(
+            VehicleAlreadyExistsException ex,
+            HttpServletRequest request) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.CONFLICT.value());
+        response.put("error", "Conflict");
+        response.put("message", ex.getMessage());
+        response.put("path", request.getRequestURI());
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 
 }

@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class BookingResponse {
 
-    private UUID bookingId;
+    private String bookingId;
 
     private String bookingNumber;
 
@@ -40,11 +40,11 @@ public class BookingResponse {
 
     private String message;
 
-	public UUID getBookingId() {
+	public String getBookingId() {
 		return bookingId;
 	}
 
-	public void setBookingId(UUID bookingId) {
+	public void setBookingId(String bookingId) {
 		this.bookingId = bookingId;
 	}
 
