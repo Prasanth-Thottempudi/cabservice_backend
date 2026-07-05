@@ -1,6 +1,7 @@
 package com.nova.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.nova.dto.CustomerRequest;
 import com.nova.dto.CustomerResponse;
 import com.nova.entity.Customer;
+import com.nova.exception.CustomerAlreadyExistsException;
 import com.nova.exception.CustomerNotFoundException;
 import com.nova.repository.CustomerRepository;
 import com.nova.service.CustomerService;
@@ -33,6 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setGender(request.getGender());
         customer.setDateOfBirth(request.getDateOfBirth());
 
+        customer.setCustomerNumber(generateCustomerNumber());
         // Default values
         customer.setWalletBalance(0.0);
         customer.setRating(5.0);
@@ -42,6 +45,16 @@ public class CustomerServiceImpl implements CustomerService {
 
         customer.setCreatedAt(LocalDateTime.now());
         customer.setUpdatedAt(LocalDateTime.now());
+        
+        if (customerRepository.existsByEmail(request.getEmail())) {
+            throw new CustomerAlreadyExistsException(
+                    request.getEmail() + " already exists.");
+        }
+
+        if (customerRepository.existsByMobileNumber(request.getMobileNumber())) {
+            throw new CustomerAlreadyExistsException(
+                    request.getMobileNumber() + " already exists.");
+        }
 
         Customer savedCustomer = customerRepository.save(customer);
 
@@ -79,7 +92,24 @@ public class CustomerServiceImpl implements CustomerService {
         response.setReferredBy(customer.getReferredBy());
         response.setCreatedAt(customer.getCreatedAt());
         response.setUpdatedAt(customer.getUpdatedAt());
+        response.setCustomerNumber(customer.getCustomerNumber());
 
         return response;
+    }
+    
+    private String generateCustomerNumber() {
+
+        Optional<Customer> lastCustomer =
+                customerRepository.findTopByOrderByCustomerNumberDesc();
+
+        if (lastCustomer.isEmpty()) {
+            return "NOVA000001";
+        }
+
+        String lastNumber = lastCustomer.get().getCustomerNumber();
+
+        int number = Integer.parseInt(lastNumber.substring(4));
+
+        return String.format("NOVA%06d", number + 1);
     }
 }

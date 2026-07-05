@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class CustomerResponse {
 
     private UUID customerId;
+    private String customerNumber;
 
     private String firstName;
 
@@ -183,6 +184,14 @@ public class CustomerResponse {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getCustomerNumber() {
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
 	}
     
     

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -34,19 +35,50 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Customer Already Exists Exception
-     */
-    @ExceptionHandler(CustomerAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleCustomerAlreadyExistsException(
-            CustomerAlreadyExistsException ex,
+
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex,
             HttpServletRequest request) {
 
         ErrorResponse response = new ErrorResponse();
+
         response.setTimestamp(LocalDateTime.now());
         response.setStatus(HttpStatus.CONFLICT.value());
         response.setError(HttpStatus.CONFLICT.getReasonPhrase());
-        response.setMessage(ex.getMessage());
+
+        String message = "Duplicate value already exists.";
+
+        Throwable rootCause = ex.getRootCause();
+
+        if (rootCause != null && rootCause.getMessage() != null) {
+
+            String error = rootCause.getMessage();
+
+            if (error.contains("Key (email)=(")) {
+
+                int start = error.indexOf("Key (email)=(") + "Key (email)=(".length();
+                int end = error.indexOf(") already exists");
+
+                if (start > 0 && end > start) {
+                    message = error.substring(start, end) + " already exists.";
+                }
+            }
+
+            else if (error.contains("Key (mobile_number)=(")) {
+
+                int start = error.indexOf("Key (mobile_number)=(")
+                        + "Key (mobile_number)=(".length();
+                int end = error.indexOf(") already exists");
+
+                if (start > 0 && end > start) {
+                    message = error.substring(start, end) + " already exists.";
+                }
+            }
+        }
+
+        response.setMessage(message);
         response.setPath(request.getRequestURI());
 
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);

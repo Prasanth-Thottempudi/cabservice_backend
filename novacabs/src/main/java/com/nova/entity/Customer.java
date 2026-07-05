@@ -32,6 +32,9 @@ public class Customer {
     @Column(name = "customer_id", nullable = false, updatable = false)
     private UUID customerId;
 
+    @Column(name = "customer_number", unique = true, nullable = false)
+    private String customerNumber;
+    
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
@@ -230,6 +233,14 @@ public class Customer {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getCustomerNumber() {
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
 	}
 
     
